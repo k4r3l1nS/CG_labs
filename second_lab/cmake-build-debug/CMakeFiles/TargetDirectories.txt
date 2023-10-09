@@ -1,0 +1,3 @@
+/home/k4r3l1ns/Desktop/CG_labs/second_lab/cmake-build-debug/CMakeFiles/second_lab.dir
+/home/k4r3l1ns/Desktop/CG_labs/second_lab/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/k4r3l1ns/Desktop/CG_labs/second_lab/cmake-build-debug/CMakeFiles/rebuild_cache.dir
