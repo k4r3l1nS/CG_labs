@@ -7,57 +7,24 @@
 #include <cmath>
 #include <algorithm>
 
-void ImageRefactoringUnit::applyFilter(Image& image, int filter[3][3])
-{
-    Image copy(image);
-    int filterDivisor = 16; // ����������� ��� �������� � ������������ � ����� ��������
-
-    int m_height = image.getMHeight();
-    int m_width = image.getMWidth();
-    for (int y = 1; y < m_height - 1; y++) {
-        for (int x = 1; x < m_width - 1; x++) {
-            int r = 0, g = 0, b = 0, a = 0;
-
-            for (int dy = -1; dy <= 1; dy++) {
-                for (int dx = -1; dx <= 1; dx++) {
-                    int rr, gg, bb, aa;
-                    copy.getPixel(y + dy, x + dx, rr, gg, bb, aa);
-                    int filterValue = filter[dy + 1][dx + 1];
-
-                    r += rr * filterValue;
-                    g += gg * filterValue;
-                    b += bb * filterValue;
-                    a += aa * filterValue;
-                }
-            }
-
-            r /= filterDivisor;
-            g /= filterDivisor;
-            b /= filterDivisor;
-            a /= filterDivisor;
-
-            image.setPixel(y, x, r, g, b, a);
-        }
-    }
-}
-
 void ImageRefactoringUnit::applyGaussianFilter(Image& image, int size, double sigma)
 {
+    sigma = std::abs(sigma) > 2.0 ? 2.0 : sigma;
+
     std::vector<std::vector<double>> filter(size, std::vector<double>(size));
     double sum = 0.0;
     int start = size / 2;
     for (int x = -start; x <= start; x++) {
         for (int y = -start; y <= start; y++) {
-            filter[x + start][y + start] = exp(-(x * x + y * y) / (2 * sigma * sigma)) / (2 * 3.14159265 * sigma * sigma);
+            filter[x + start][y + start] =
+                    exp(-(x * x + y * y) / (2 * sigma * sigma)) / (2 * M_PI * sigma * sigma);
             sum += filter[x + start][y + start];
         }
     }
-    // ����������� ����
     for (int i = 0; i < size; ++i)
         for (int j = 0; j < size; ++j)
             filter[i][j] /= sum;
 
-    // ��������� ������ � �����������
     Image copy(image);
     int m_height = image.getMHeight();
     int m_width = image.getMWidth();
@@ -109,7 +76,8 @@ void ImageRefactoringUnit::applyMedianFilter(Image& image, int size)
             std::sort(bValues.begin(), bValues.end());
             std::sort(aValues.begin(), aValues.end());
 
-            image.setPixel(y, x, rValues[rValues.size() / 2], gValues[gValues.size() / 2], bValues[bValues.size() / 2], aValues[aValues.size() / 2]);
+            image.setPixel(y, x, rValues[rValues.size() / 2], gValues[gValues.size() / 2],
+                           bValues[bValues.size() / 2], aValues[aValues.size() / 2]);
         }
     }
 }

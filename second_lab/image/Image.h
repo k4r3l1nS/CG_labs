@@ -15,7 +15,7 @@ public:
     Image(int width, int height, int hChannels);
     Image(const Image&);
     Image(Image&&) noexcept;
-    Image(const std::string &path);
+    explicit Image(const std::string &path);
     ~Image();
 
     Image& operator=(const Image&);

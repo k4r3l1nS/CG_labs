@@ -18,7 +18,6 @@ Image::Image()
 }
 
 Image::Image(const int width, const int height, const int m_nChannels)
-
 {
     this->m_height = height;
     this->m_width = width;
