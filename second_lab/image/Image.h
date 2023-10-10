@@ -12,25 +12,23 @@ class Image {
 
 public:
     Image();
-    Image(int width, int height, int hChannels);
     Image(const Image&);
-    Image(Image&&) noexcept;
+
+    [[maybe_unused]] Image(Image&&) noexcept;
     explicit Image(const std::string &path);
     ~Image();
 
     Image& operator=(const Image&);
     Image& operator=(Image&&) noexcept;
 
-    bool isRead(const std::string &path);
-    bool isWrite(const std::string &path);
+    bool read(const std::string &path);
+    bool save(const std::string &path);
 
     void setPixel(int row, int col, int r, int g, int b, int a);
     void getPixel(int row, int col, int& r, int& g, int& b, int& a);
-//    void applyFilter(int filter[3][3]);
-//    void applyGaussianFilter(int size, double sigma);
-//    void applyMedianFilter(int size);
-    int getMWidth() const;
-    int getMHeight() const;
+
+    [[nodiscard]] int getMWidth() const;
+    [[nodiscard]] int getMHeight() const;
 
 
 private:

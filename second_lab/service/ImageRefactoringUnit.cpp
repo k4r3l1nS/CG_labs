@@ -7,9 +7,9 @@
 #include <cmath>
 #include <algorithm>
 
-void ImageRefactoringUnit::applyGaussianFilter(Image& image, int size, double sigma)
+void ImageRefactoringUnit::applyGaussianBlur(Image& image, int size, double sigma)
 {
-    sigma = std::abs(sigma) > 2.0 ? 2.0 : sigma;
+    sigma = sigma == 0.0 ? 0.000000000001 : sigma;
 
     std::vector<std::vector<double>> filter(size, std::vector<double>(size));
     double sum = 0.0;
@@ -46,7 +46,7 @@ void ImageRefactoringUnit::applyGaussianFilter(Image& image, int size, double si
     }
 }
 
-void ImageRefactoringUnit::applyMedianFilter(Image& image, int size)
+void ImageRefactoringUnit::applyMedianBlur(Image& image, int size)
 {
     Image copy(image);
     std::vector<int> rValues, gValues, bValues, aValues;

@@ -10,8 +10,8 @@
 class ImageRefactoringUnit {
 
 public:
-    static void applyGaussianFilter(Image& image, int size, double sigma);
-    static void applyMedianFilter(Image& image, int size);
+    static void applyMedianBlur(Image& image, int size);
+    static void applyGaussianBlur(Image& image, int size, double sigma);
 };
 
 

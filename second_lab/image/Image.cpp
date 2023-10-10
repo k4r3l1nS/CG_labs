@@ -7,6 +7,7 @@
 #include "../lib/stb_image_write.h"
 #include <vector>
 #include <stdexcept>
+#include <iostream>
 
 Image::Image()
 {
@@ -15,14 +16,6 @@ Image::Image()
     this->m_size = 0;
     this->m_nChannels = 0;
     this->m_data = nullptr;
-}
-
-Image::Image(const int width, const int height, const int m_nChannels)
-{
-    this->m_height = height;
-    this->m_width = width;
-    this->m_nChannels = m_nChannels;
-    m_data = std::make_unique<uint8_t[]>(m_size);
 }
 
 Image::Image(const Image & obj)
@@ -38,7 +31,7 @@ Image::Image(const Image & obj)
     }
 }
 
-Image::Image(Image && obj) noexcept
+[[maybe_unused]] Image::Image(Image && obj) noexcept
 {
     m_height = obj.m_height;
     m_width = obj.m_width;
@@ -51,13 +44,11 @@ Image::Image(Image && obj) noexcept
 
 Image::Image(const std::string &path) : Image()
 {
-    if (!isRead(path))
+    if (!read(path))
         throw std::runtime_error("Ошибка считывания фотографии");
 }
 
-Image::~Image()
-{
-}
+Image::~Image() = default;
 
 Image &Image::operator=(const Image & obj)
 {
@@ -89,15 +80,20 @@ Image & Image::operator=(Image && obj) noexcept
     return *this;
 }
 
-bool Image::isRead(const std::string & path)
+bool Image::read(const std::string & path)
 {
-    m_data.reset(stbi_load(path.c_str(), &m_width, &m_height, &m_nChannels, 0));
-    if (m_data)
-        m_size = m_width * m_height*m_nChannels;
-    return true;
+    try {
+        m_data.reset(stbi_load(path.c_str(), &m_width, &m_height, &m_nChannels, 0));
+        if (m_data)
+            m_size = m_width * m_height * m_nChannels;
+        return true;
+    } catch (const std::exception& ex) {
+        std::cerr << ex.what();
+        return false;
+    }
 }
 
-bool Image::isWrite(const std::string & path)
+bool Image::save(const std::string & path)
 {
     return stbi_write_png(path.c_str(),m_width,m_height,m_nChannels,m_data.get(),0);
 }
@@ -133,102 +129,3 @@ int Image::getMWidth() const {
 int Image::getMHeight() const {
     return m_height;
 }
-
-//void Image::applyFilter(int filter[3][3]) {
-//    Image copy(*this);
-//    int filterDivisor = 16; // ����������� ��� �������� � ������������ � ����� ��������
-//
-//    for (int y = 1; y < m_height - 1; y++) {
-//        for (int x = 1; x < m_width - 1; x++) {
-//            int r = 0, g = 0, b = 0, a = 0;
-//
-//            for (int dy = -1; dy <= 1; dy++) {
-//                for (int dx = -1; dx <= 1; dx++) {
-//                    int rr, gg, bb, aa;
-//                    copy.getPixel(y + dy, x + dx, rr, gg, bb, aa);
-//                    int filterValue = filter[dy + 1][dx + 1];
-//
-//                    r += rr * filterValue;
-//                    g += gg * filterValue;
-//                    b += bb * filterValue;
-//                    a += aa * filterValue;
-//                }
-//            }
-//
-//            r /= filterDivisor;
-//            g /= filterDivisor;
-//            b /= filterDivisor;
-//            a /= filterDivisor;
-//
-//            setPixel(y, x, r, g, b, a);
-//        }
-//    }
-//}
-
-//void Image::applyGaussianFilter(int size, double sigma) {
-//    // ������� ���� �������
-//    std::vector<std::vector<double>> filter(size, std::vector<double>(size));
-//    double sum = 0.0;
-//    int start = size / 2;
-//    for (int x = -start; x <= start; x++) {
-//        for (int y = -start; y <= start; y++) {
-//            filter[x + start][y + start] = exp(-(x * x + y * y) / (2 * sigma * sigma)) / (2 * 3.14159265 * sigma * sigma);
-//            sum += filter[x + start][y + start];
-//        }
-//    }
-//    // ����������� ����
-//    for (int i = 0; i < size; ++i)
-//        for (int j = 0; j < size; ++j)
-//            filter[i][j] /= sum;
-//
-//    // ��������� ������ � �����������
-//    Image copy(*this);
-//    for (int y = start; y < m_height - start; y++) {
-//        for (int x = start; x < m_width - start; x++) {
-//            double r = 0, g = 0, b = 0, a = 0;
-//            for (int i = -start; i <= start; ++i) {
-//                for (int j = -start; j <= start; ++j) {
-//                    int rr, gg, bb, aa;
-//                    copy.getPixel(y + i, x + j, rr, gg, bb, aa);
-//                    r += rr * filter[i + start][j + start];
-//                    g += gg * filter[i + start][j + start];
-//                    b += bb * filter[i + start][j + start];
-//                    a += aa * filter[i + start][j + start];
-//                }
-//            }
-//            setPixel(y, x, static_cast<int>(r), static_cast<int>(g), static_cast<int>(b), static_cast<int>(a));
-//        }
-//    }
-//}
-
-//void Image::applyMedianFilter(int size) {
-//    Image copy(*this);
-//    std::vector<int> rValues, gValues, bValues, aValues;
-//
-//    for (int y = size / 2; y < m_height - size / 2; y++) {
-//        for (int x = size / 2; x < m_width - size / 2; x++) {
-//            rValues.clear();
-//            gValues.clear();
-//            bValues.clear();
-//            aValues.clear();
-//
-//            for (int i = -size / 2; i <= size / 2; ++i) {
-//                for (int j = -size / 2; j <= size / 2; ++j) {
-//                    int rr, gg, bb, aa;
-//                    copy.getPixel(y + i, x + j, rr, gg, bb, aa);
-//                    rValues.push_back(rr);
-//                    gValues.push_back(gg);
-//                    bValues.push_back(bb);
-//                    aValues.push_back(aa);
-//                }
-//            }
-//
-//            std::sort(rValues.begin(), rValues.end());
-//            std::sort(gValues.begin(), gValues.end());
-//            std::sort(bValues.begin(), bValues.end());
-//            std::sort(aValues.begin(), aValues.end());
-//
-//            setPixel(y, x, rValues[rValues.size() / 2], gValues[gValues.size() / 2], bValues[bValues.size() / 2], aValues[aValues.size() / 2]);
-//        }
-//    }
-//}
