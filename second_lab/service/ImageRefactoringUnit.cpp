@@ -7,6 +7,11 @@
 #include <cmath>
 #include <algorithm>
 
+// Метод для частичного удаления гауссова шума
+//
+// @param image - экземпляр класса, представляющего изображение
+// @param size - размер гауссовой матрицы
+// @param sigma - параметр sigma гауссова сглаживающего фильтра
 void ImageRefactoringUnit::applyGaussianBlur(Image& image, int size, double sigma)
 {
     sigma = sigma == 0.0 ? 0.000000000001 : sigma;
@@ -46,6 +51,10 @@ void ImageRefactoringUnit::applyGaussianBlur(Image& image, int size, double sigm
     }
 }
 
+// Метод для частичного удаления равномерного шума
+//
+// @param image - экземпляр класса, представляющего изображение
+// @param size - параметр, определяющий степень применения фильтра
 void ImageRefactoringUnit::applyMedianBlur(Image& image, int size)
 {
     Image copy(image);
